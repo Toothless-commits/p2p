@@ -8,7 +8,7 @@ HOST = '127.0.0.1'
 PORT = 5001
 
 clients = {}
-
+client_lock = threading.Lock()
 def decd_msg(conn, n):
     data = b''
     while len(data) < n:
@@ -32,13 +32,17 @@ def encd_msg(msg):
 
 def broadcast(conn, data_dict):
     payload = encd_msg(data_dict)
-    for user, client_conn in list(clients.items()):
+    with client_lock :
+        client_list = list(clients.items())
+
+    for user, client_conn in client_list:
         if client_conn != conn:
             try:
-                client_conn.send(payload)
+                 client_conn.sendall(payload)
             except Exception as e:
-                if user in clients:
-                    del clients[user]
+                with client_lock:
+                    if user in clients:
+                        del clients[user]
 
 def handle_client(conn):
     username = None
@@ -46,17 +50,18 @@ def handle_client(conn):
         # 1. Handle initial connection handshake (get username)
         initial_msg = get_msg(conn)
         username = initial_msg.get("username")
+        with client_lock :
+            if username and username not in clients:
+                clients[username] = conn
+                print(f"[*] Username: {username} has connected")
+            else:
+                conn.close()
+                return
 
-        if username and username not in clients:
-            clients[username] = conn
-            print(f"[*] Username: {username} has connected")
-            broadcast(conn, {
-                "type": "system", 
-                "message": f"{username} has connected to the chat"
-            })
-        else:
-            conn.close()
-            return
+        broadcast(conn,{
+              "type":"chat", 
+              "content":f"[*]{username} has joined the chat room"
+              })
 
         # 2. Main loop for handling incoming messages
         while True:
@@ -81,20 +86,24 @@ def handle_client(conn):
                     "sender": sender, 
                     "message": content
                 }
-                if receiver in clients:
-                    clients[receiver].sendall(encd_msg(dm_msg))
+                with client_lock:
+                    reciever_conn = clients.get(receiver)
+
+                if reciever_conn:
+                    reciever_conn.sendall(encd_msg(dm_msg))
 
     except Exception:
         pass
 
     # 3. Cleanup on disconnect
-    if username and username in clients:
-        print(f"[*] {username} has left the chat")
-        del clients[username]
-        broadcast(conn, {
-            "type": "system",
-            "message": f"{username} has left the chat"
-        })
+    with client_lock:
+        if username and username in clients:
+            del clients[username]
+    
+    broadcast(conn, {
+        "type": "system",
+        "message": f"{username} has left the chat"
+    })
 
     conn.close()
 
