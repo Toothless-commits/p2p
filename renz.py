@@ -37,7 +37,7 @@ peers = {}
 def send_to_peer(peer_id):
 
     with client_lock:
-        peer = peers.get("peer_id")
+        peer = peers[peer_id]
 
         if not peer :return 
 
@@ -65,19 +65,28 @@ def Handle_Incoming_Request(conn,addr):
             peer_id = msg.get("peer_id")
         except ConnectionError as e :
             print(f"Error : {e}")
+            break
         except Exception as e : 
             print(f"Error : {e}")
+            break            
 
 
         if msg.get("type")=="register":
             with client_lock:
-                Handle_Peer(conn,peer_id,msg.get("name"),addr[0],addr[1])
-            
+                handle = Handle_Peer(conn,peer_id,msg.get("name"),addr[0],msg.get("port")) 
+
+            if not handle :
+                conn.sendall(encd_msg("You are already registered"))
+                    
         elif msg.get("type")=="get_peers":
             send_to_peer(peer_id)
 
         elif msg.get("type")=="unregister":
                 Remove_Peer(peer_id)
+
+   
+
+    conn.close()
     
     
 def Remove_Peer(peer_id):
@@ -93,8 +102,9 @@ def Handle_Peer(conn,peer_id,name,ip,port):
                 "IP" : ip, 
                 "PORT" : port
             }
+            return True
         else :
-            conn.sendall(encd_msg("You are already connected"))
+            return False
 
     
 
