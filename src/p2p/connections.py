@@ -6,6 +6,7 @@ def Reuse_Socket(s):
 
 def Make_Connection():
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    return s 
 
 
 def Bind(s):
@@ -14,4 +15,7 @@ def Bind(s):
 def Listen(s):
     s.listen()
 
- 
+def Connect(s):
+    conn, addr = s.accept()
+
+    return conn,addr
