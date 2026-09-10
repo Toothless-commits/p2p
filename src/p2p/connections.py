@@ -19,3 +19,12 @@ def Connect(s):
     conn, addr = s.accept()
 
     return conn,addr
+
+
+def Start_Server():
+    s = Make_Connection()
+    Reuse_Socket(s)
+    Bind(s)
+    Listen(s)
+    conn,addr =Connect(s)
+    return conn,addr
