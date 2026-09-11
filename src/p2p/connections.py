@@ -9,8 +9,8 @@ def Make_Connection():
     return s 
 
 
-def Bind(s):
-    s.bind((DISCOVERY_HOST,DISCOVERY_PORT))
+def Bind(s,HOST,PORT):
+    s.bind((HOST,PORT))
 
 def Listen(s):
     s.listen()
@@ -21,9 +21,9 @@ def Connect(s):
     return conn,addr
 
 
-def Start_Server():
+def Start_Server(HOST = DISCOVERY_HOST,PORT=DISCOVERY_PORT):
     s = Make_Connection()
-    Reuse_Socket(s)
+    Reuse_Socket(s,HOST,PORT)
     Bind(s)
     Listen(s)
     conn,addr =Connect(s)
