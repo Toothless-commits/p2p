@@ -44,6 +44,6 @@ conn,addr = Start_Server(IP,Host)
 conn.connect((DISCOVERY_HOST,DISCOVERY_PORT))
 peers["Server"] =conn
 
-t1 = threading.Thread(target=(incoming),args=(IP,Host,))
+t1 = threading.Thread(target=(incoming),args=(conn,))
 t1.daemon=True
 t1.start()
