@@ -1,7 +1,7 @@
 import struct 
 import json 
-from config import ENCODING
-from connections import *
+from p2p.config import ENCODING
+from p2p.connections import *
 def Encoding_Message(msg):
     json_msg = json.dumps(msg.encode(ENCODING))
     json_length = len(json_msg)

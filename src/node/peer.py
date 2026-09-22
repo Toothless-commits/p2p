@@ -1,7 +1,7 @@
 from p2p.config import * 
 from p2p.protocol import * 
 from p2p.connections import * 
-from .state import PeerState
+from node.state import PeerState
 import threading 
 
 lock = threading.Lock()
@@ -36,14 +36,17 @@ def incoming(conn):
 
 
 
+def start_server():
 
-IP = input("Enter your ip address")
-Host = int(input("Enter your port number"))
-conn,addr = Start_Server(IP,Host)
+    IP = input("Enter your ip address")
+    Host = int(input("Enter your port number"))
+    conn,addr = Start_Server(IP,Host)
 
-conn.connect((DISCOVERY_HOST,DISCOVERY_PORT))
-peers["Server"] =conn
+    conn.connect((DISCOVERY_HOST,DISCOVERY_PORT))
+    peers["Server"] =conn
 
-t1 = threading.Thread(target=(incoming),args=(conn,))
-t1.daemon=True
-t1.start()
+    t1 = threading.Thread(target=(incoming),args=(conn,))
+    t1.daemon=True
+    t1.start()
+
+

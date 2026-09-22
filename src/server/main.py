@@ -37,4 +37,8 @@ def Handle_Client(conn,addr):
             print(f"Error : {e}")
 
 conn,addr = Start_Server()
+Handle_Client(conn,addr)
+
+
+
 

@@ -1,5 +1,5 @@
 import socket
-from config import DISCOVERY_HOST,DISCOVERY_PORT
+from p2p.config import DISCOVERY_HOST,DISCOVERY_PORT
 
 def Reuse_Socket(s):
     s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)    
@@ -23,8 +23,8 @@ def Connect(s):
 
 def Start_Server(HOST = DISCOVERY_HOST,PORT=DISCOVERY_PORT):
     s = Make_Connection()
-    Reuse_Socket(s,HOST,PORT)
-    Bind(s)
+    Reuse_Socket(s)
+    Bind(s,HOST,PORT)
     Listen(s)
     conn,addr =Connect(s)
     return conn,addr
