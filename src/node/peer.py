@@ -26,10 +26,12 @@ def incoming(conn):
 
             if type == "Peer List":
                 list = Recieved_Message["peers"]
-
+                print(list)
                 for peer_id in list : 
                     if peer_id not in peers:
                         connect_to_new_peer(peers[peer_id],conn)
+            else :
+                print(Recieved_Message)
 
     except Exception as e :
         print(f"Error : {e}")
