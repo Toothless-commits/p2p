@@ -1,6 +1,6 @@
-from p2p.config import * 
-from p2p.protocol import * 
-from p2p.connections import * 
+from src.p2p.config import * 
+from src.p2p.protocol import * 
+from src.p2p.connections import * 
 from node.state import PeerState
 import threading 
 
@@ -34,19 +34,48 @@ def incoming(conn):
     except Exception as e :
         print(f"Error : {e}")
 
+def outgoing(conn,):
+    try :
+        while True:
+            choice = input("1.Get peer's list \n 2.Direct Msg")
+            if choice == "1" :
+                with lock:
+                    conn = peers["Server"]
+
+                conn.sendall(Encoding_Message("Get Peers"))
+
+            elif choice == "2" :
+                peer_id = input("Enter the peer_id you wanna message")
+
+                for peer in peers :
+                    if peer_id == peer :
+                        with lock :
+                            conn = peers[peer_id]
+                            break
+                    else :
+                        print("Enter correct peer_id")
+
+
+                message = input("Enter the message you wanna send")
+
+                conn.sendall(Encoding_Message(message))
+    except Exception as e: 
+        print(f"Error : {e}")
 
 
 def start_server():
 
-    IP = input("Enter your ip address")
-    Host = int(input("Enter your port number"))
-    conn,addr = Start_Server(IP,Host)
+    IP = input("Enter your ip address").strip()
+    Port = int(input("Enter your port number"))
+    conn,addr = Start_Server(IP,Port)
 
     conn.connect((DISCOVERY_HOST,DISCOVERY_PORT))
     peers["Server"] =conn
+    conn.sendall(Encoding_Message("Register"))
 
     t1 = threading.Thread(target=(incoming),args=(conn,))
+    t2 = threading.Thread(target=(outgoing),args=(conn,))
     t1.daemon=True
+    t2.daemon=True
     t1.start()
-
-
+    t2.start()
