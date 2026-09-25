@@ -19,6 +19,7 @@ def connect_to_new_peer (info,conn):
         
 
 def incoming(conn):
+    print("start")
     try : 
         while True : 
             Recieved_Message = Read_Message(conn)
@@ -37,6 +38,7 @@ def incoming(conn):
         print(f"Error : {e}")
 
 def outgoing(conn,):
+    print("start")
     try :
         while True:
             choice = input("1.Get peer's list \n 2.Direct Msg")
@@ -67,6 +69,8 @@ def outgoing(conn,):
 
 def start_server():
 
+
+    print("start")
     IP = input("Enter your ip address").strip()
     Port = int(input("Enter your port number"))
     conn,addr = Start_Server(IP,Port)

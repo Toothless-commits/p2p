@@ -17,14 +17,11 @@ def Listen(s):
 
 def Connect(s):
     conn, addr = s.accept()
-
     return conn,addr
-
 
 def Start_Server(HOST = DISCOVERY_HOST,PORT=DISCOVERY_PORT):
     s = Make_Connection()
     Reuse_Socket(s)
     Bind(s,HOST,PORT)
     Listen(s)
-    conn,addr =Connect(s)
-    return conn,addr
+    return s
