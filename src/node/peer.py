@@ -82,7 +82,6 @@ def start_server():
                                 "ip":IP, 
                                 "Port":Port
                                 }))
-
     t1 = threading.Thread(target=(incoming),args=(IP,Port))
     t2 = threading.Thread(target=(outgoing),args=())
     t1.daemon=True

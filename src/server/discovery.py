@@ -11,9 +11,9 @@ def discovery(s):
     conn,addr = Connect(s)
     return conn,addr
 
-def add_to_peer(p_id,conn,peer,addr,port):
+def add_to_peer(p_id,peer,addr,port):
     peer[p_id]={"ip":addr[0],
                 "port":port}
 
 def remove(p_id,peer):
-    del peer[p_id]
+    peer.pop(p_id,None)
