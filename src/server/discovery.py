@@ -11,18 +11,9 @@ def discovery(s):
     conn,addr = Connect(s)
     return conn,addr
 
-def Check(conn,peers):
+def add_to_peer(p_id,conn,peer,addr,port):
+    peer[p_id]={"ip":addr[0],
+                "port":port}
 
-    msg = Read_Message(conn)
-
-    p_id = msg["peer_id"]
-
-    for peer_in in peers : 
-        if p_id == peer_in:
-            return True
-        else :
-            return False
-
-def add_to_peer(conn,peer):
-    msg = 
-    peer[peer_id]=conn
+def remove(p_id,peer):
+    del peer[p_id]

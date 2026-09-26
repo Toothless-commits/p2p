@@ -12,13 +12,26 @@ def Handle_Client(s):
         try :
             conn,addr = discovery(s)
 
-            if not Check(conn) :
-                add_to_peer(conn,peer)
+            msg = Read_Message(conn)
 
+            type = msg["type"]
+            p_id = msg["peer_id"]
+            
+            if type == "connect" :
+                add_to_peer(p_id,conn,peer)
+
+            elif type == "disconnect":
+                remove(p_id,peer)
+
+            elif type == "peer list":
+                msg = {"type":"Peer List", 
+                       "peers" : ""}
         except Exception as e : 
             print(f"Error : {e}")
 
-s = Start_Server()
+
+
+s = Make_Connection()
 
 Handle_Client(s)
 
