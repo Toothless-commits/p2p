@@ -24,6 +24,7 @@ def Handle_Client(conn,addr):
                 port = msg["Port"]
                 with lock :
                     add_to_peer(p_id,peer,addr,port)
+                    print("connected")
 
             elif msg_type == "disconnect":
                 with lock :
@@ -53,7 +54,7 @@ def Accept_Loop(s):
 
 s = Make_Connection()
 Reuse_Socket(s)
-Bind(s,DEFAULT_PEER_HOST,DEFAULT_PEER_PORT)
+Bind(s,DISCOVERY_HOST,DISCOVERY_PORT)
 Listen(s)
 
 Accept_Loop(s)

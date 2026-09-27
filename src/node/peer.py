@@ -55,17 +55,19 @@ def incoming(IP,Port):
     except Exception as e :
         print(f"Error : {e}")
 
-def outgoing():
+def outgoing(p_id):
     print("start")
     try :
         while True:
-            choice = input("1.Get peer's list \n 2.Direct Msg")
+            choice = input("1.Get peer's list \n 2.Direct Msg \n")
             if choice == "1" :
                 with lock:
                     conn = peers["Server"]
 
-                conn.sendall(Encoding_Message({"type":"peer_list"}))
-
+                conn.sendall(Encoding_Message({"type":"peer_list",
+                                               "peer_id":p_id}))
+                response = Read_Message(conn)
+                print(response)
             # elif choice == "2" :
             #     peer_id = input("Enter the peer_id you wanna message")
 
@@ -101,7 +103,7 @@ def start_server():
                                 "Port":Port
                                 }))
         t1 = threading.Thread(target=(incoming),args=(IP,Port))
-        t2 = threading.Thread(target=(outgoing),args=())
+        t2 = threading.Thread(target=(outgoing),args=(str(p_id),))
         t1.daemon=True
         t2.daemon=True
         t1.start()

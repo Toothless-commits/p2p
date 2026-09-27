@@ -3,7 +3,8 @@ import json
 from p2p.config import ENCODING
 from p2p.connections import *
 def Encoding_Message(msg):
-    json_msg = json.dumps(msg.encode(ENCODING))
+    json_msg = json.dumps(msg).encode(ENCODING)
+    
     json_length = len(json_msg)
     header = struct.pack('!I',json_length)
     return header+json_msg
@@ -26,7 +27,7 @@ def Read_Message(conn):
 
     message = Decoding_Message(conn,length)
 
-    return json.dumps(message)
+    return json.loads(message)
 
 
 
