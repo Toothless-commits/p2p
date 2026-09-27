@@ -13,6 +13,9 @@ def Handle_Client(conn,addr):
 
             msg = Read_Message(conn)
 
+            if not msg :
+                break
+
             type = msg["type"]
             p_id = msg["peer_id"]
             
