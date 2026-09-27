@@ -8,6 +8,7 @@ lock = threading.Lock()
 
 
 def discovery(s):
+    
     conn,addr = Connect(s)
     return conn,addr
 

@@ -7,10 +7,9 @@ import threading
 peer = PeerState()
 lock = threading.Lock()
 
-def Handle_Client(s):
+def Handle_Client(conn,addr):
     while True : 
         try :
-            conn,addr = discovery(s)
 
             msg = Read_Message(conn)
 
@@ -22,23 +21,36 @@ def Handle_Client(s):
                     add_to_peer(p_id,conn,peer)
 
             elif type == "disconnect":
-                remove(p_id,peer)
+                with lock :
+                    remove(p_id,peer)
+                break
 
-            elif type == "peer list":
+            elif type == "peer_list":
                 with lock :
                     peer_list = dict(peer)
-                msg = {"type":"Peer List", 
+                msg = {"type":"peer_list", 
                        "peers" : list(peer_list.keys())}
                 conn.sendall(Encoding_Message(msg))
         except Exception as e : 
             print(f"Error : {e}")
 
+    conn.close()
 
+
+def Accept_Loop(s):
+    while True : 
+        try : 
+            conn , addr = discovery(s)
+            t1 = threading.Thread(target=(Handle_Client),args=(conn,addr,))
+            t1.start()
+        except Exception as e :
+            print(f"Error : {e}")
 
 s = Make_Connection()
+Reuse_Socket(s)
+Bind(s,DEFAULT_PEER_HOST,DEFAULT_PEER_PORT)
+Listen(s)
 
-Handle_Client(s)
-
-
+Accept_Loop(s)
 
 
