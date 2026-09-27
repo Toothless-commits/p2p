@@ -33,7 +33,10 @@ def read_messages(conn,addr):
                 peer_list = Recieved_Messages["peer_list"]
                 for peer_id , info in peer_list.items() :
                     if peer_id not in peers :
-                        connect_to_new_peer(peer_id,info["ip"],info["Port"],peers)
+                        try:
+                            connect_to_new_peer(peer_id,info["ip"],info["port"],peers)
+                        except ConnectionRefusedError as e :
+                            print(f"Skipping unreachable peer {peer_id}:{e}")
             else :
                 print(Recieved_Messages)
     except Exception as e :
@@ -61,7 +64,7 @@ def outgoing():
                 with lock:
                     conn = peers["Server"]
 
-                conn.sendall(Encoding_Message({"type":"Get Peers"}))
+                conn.sendall(Encoding_Message({"type":"peer_list"}))
 
             # elif choice == "2" :
             #     peer_id = input("Enter the peer_id you wanna message")
@@ -107,4 +110,3 @@ def start_server():
         t2.join()
     except Exception as e :
         print(f"Error : {e}")
-        

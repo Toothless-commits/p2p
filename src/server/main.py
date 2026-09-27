@@ -16,23 +16,25 @@ def Handle_Client(conn,addr):
             if not msg :
                 break
 
-            type = msg["type"]
+            msg_type = msg["type"]
             p_id = msg["peer_id"]
+        
             
-            if type == "connect" :
+            if msg_type == "connect" :
+                port = msg["Port"]
                 with lock :
-                    add_to_peer(p_id,conn,peer)
+                    add_to_peer(p_id,peer,addr,port)
 
-            elif type == "disconnect":
+            elif msg_type == "disconnect":
                 with lock :
                     remove(p_id,peer)
                 break
 
-            elif type == "peer_list":
+            elif msg_type == "peer_list":
                 with lock :
                     peer_list = dict(peer)
                 msg = {"type":"peer_list", 
-                       "peers" : list(peer_list.keys())}
+                       "peer_list" : peer_list}
                 conn.sendall(Encoding_Message(msg))
         except Exception as e : 
             print(f"Error : {e}")
