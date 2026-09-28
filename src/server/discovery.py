@@ -17,4 +17,4 @@ def add_to_peer(p_id,peer,addr,port):
                 "port":port}
 
 def remove(p_id,peer):
-    peer.pop(p_id,None)
+    peer.pop(p_id)

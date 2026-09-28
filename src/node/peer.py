@@ -110,5 +110,9 @@ def start_server():
         t2.start()
         t1.join()
         t2.join()
+    except KeyboardInterrupt :
+        print("Disconnecting")
+        s.sendall(Encoding_Message({"type":"disconnect",
+                                    "peer_id":str(p_id)}))
     except Exception as e :
         print(f"Error : {e}")

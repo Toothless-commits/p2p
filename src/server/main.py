@@ -29,7 +29,9 @@ def Handle_Client(conn,addr):
             elif msg_type == "disconnect":
                 with lock :
                     remove(p_id,peer)
-                break
+                    print("disconnected")
+                    break
+                
 
             elif msg_type == "peer_list":
                 with lock :

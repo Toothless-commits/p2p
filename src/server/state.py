@@ -28,3 +28,6 @@ class PeerState:
 
     def values(self):
         return self.peers.values()
+
+    def pop(self,p_id):
+        self.peers.pop(p_id,None)
