@@ -54,11 +54,17 @@ def Accept_Loop(s):
         except Exception as e :
             print(f"Error : {e}")
 
-s = Make_Connection()
-Reuse_Socket(s)
-Bind(s,DISCOVERY_HOST,DISCOVERY_PORT)
-Listen(s)
 
-Accept_Loop(s)
+try :
+    s = Make_Connection()
+    Reuse_Socket(s)
+    Bind(s,DISCOVERY_HOST,DISCOVERY_PORT)
+    Listen(s)
 
+    Accept_Loop(s)
+
+except KeyboardInterrupt :
+    print("Shutting down server")
+except Exception as e :
+    print("Error : {e}")
 
