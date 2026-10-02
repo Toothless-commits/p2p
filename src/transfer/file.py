@@ -7,7 +7,7 @@ def file_hash(p):
     with p.open("rb") as f :
         while chunk := f.read(64*1024):
             h.update(chunk)
-    return h.hexdigest()
+    return h.digest()
 
 
 def file_send(path,conn):
@@ -19,10 +19,10 @@ def file_load(path,conn):
     p = Path(path)
 
     try : 
-        if not p.exists :
+        if not p.exists() :
             print("File does not exist")
         else :
-            file_send(path,conn)
+            file_send(p,conn)
     except Exception as e :
         print(f"Error : {e}")
 
