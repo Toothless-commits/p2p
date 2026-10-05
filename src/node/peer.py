@@ -8,6 +8,8 @@ from src.p2p.protocol import *
 from node.state import PeerState
 from transfer.file import receive_file
 
+from pathlib import Path
+
 lock = threading.Lock()
 peers = PeerState()
 
@@ -148,4 +150,3 @@ def start_server():
         s.sendall(Encoding_Message({"type": "disconnect", "peer_id": p_id}))
     except Exception as e:
         print(f"Error : {e}")
-
