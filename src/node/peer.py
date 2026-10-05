@@ -1,12 +1,17 @@
-from src.p2p.config import *
-from src.p2p.protocol import *
-from src.p2p.connections import *
-from node.state import PeerState
-import uuid
 import threading
+import uuid
+
+from src.p2p.config import *
+from src.p2p.connections import *
+from src.p2p.protocol import *
+
+from node.state import PeerState
+from transfer.file import receive_file
 
 lock = threading.Lock()
 peers = PeerState()
+
+Download_DIR = Path.home() / "Downloads"
 
 
 def connect_to_new_peer(p_id, ip, port, peers, my_id):
@@ -32,7 +37,7 @@ def check(peers, peer_list, my_id):
 
 
 def remove_peer_by_conn(conn):
-    
+
     with lock:
         for pid, s in list(peers.items()):
             if s is conn:
@@ -53,14 +58,12 @@ def read_messages(conn, addr, my_id):
             if msg_type == "peer_list":
                 check(peers, Recieved_Messages["peer_list"], my_id)
 
-            elif msg_type == "hello":
-                with lock:
-                    peers[Recieved_Messages["peer_id"]] = conn
-                print(f"Peer {Recieved_Messages['peer_id']} connected")
-
             elif msg_type == "chat":
                 print(f"\n[{Recieved_Messages['peer_id']}] {Recieved_Messages['text']}")
-
+            elif msg_type == "File":
+                status = receive_file(conn, Download_DIR)
+                if not status:
+                    print("File Cannot be shared")
             else:
                 print(Recieved_Messages)
 
@@ -76,7 +79,9 @@ def incoming(IP, Port, my_id):
         s = Start_Server(IP, Port)
         while True:
             conn, addr = s.accept()
-            t = threading.Thread(target=read_messages, args=(conn, addr, my_id), daemon=True)
+            t = threading.Thread(
+                target=read_messages, args=(conn, addr, my_id), daemon=True
+            )
             t.start()
     except Exception as e:
         print(f"Error : {e}")
@@ -108,11 +113,9 @@ def outgoing(p_id):
                     conn = peers[peer_id]
 
                 message = input("Enter the message you wanna send \n")
-                conn.sendall(Encoding_Message({
-                    "type": "chat",
-                    "peer_id": p_id,
-                    "text": message
-                }))
+                conn.sendall(
+                    Encoding_Message({"type": "chat", "peer_id": p_id, "text": message})
+                )
 
     except Exception as e:
         print(f"Error : {e}")
@@ -127,12 +130,11 @@ def start_server():
     try:
         s.connect((DISCOVERY_HOST, DISCOVERY_PORT))
         peers["Server"] = s
-        s.sendall(Encoding_Message({
-            "type": "connect",
-            "peer_id": p_id,
-            "ip": IP,
-            "Port": Port
-        }))
+        s.sendall(
+            Encoding_Message(
+                {"type": "connect", "peer_id": p_id, "ip": IP, "Port": Port}
+            )
+        )
         t1 = threading.Thread(target=incoming, args=(IP, Port, p_id))
         t2 = threading.Thread(target=outgoing, args=(p_id,))
         t1.daemon = True
@@ -146,3 +148,4 @@ def start_server():
         s.sendall(Encoding_Message({"type": "disconnect", "peer_id": p_id}))
     except Exception as e:
         print(f"Error : {e}")
+

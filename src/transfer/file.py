@@ -1,6 +1,8 @@
 from pathlib import Path
 import hashlib
 
+from p2p.protocol import Encoding_Message
+
 SHARED = Path("Shared").resolve()
 OK, NOT_FOUND, DENIED = b"\x00", b"\x01", b"\x10"
 CHUNK = 64 * 1024
@@ -21,6 +23,7 @@ def file_send(p, conn):
 
 
 def file_load(path, conn):
+    conn.sendall(Encoding_Message({"type": "File"}))
     p = (SHARED / path).resolve()
     if not p.is_relative_to(SHARED):
         conn.sendall(DENIED)
@@ -54,8 +57,7 @@ def file_load(path, conn):
         return True
     except Exception as e:
         print(f"Error : {e}")
-
-    return False
+        return False
 
 
 def recv_exact(conn, n):
