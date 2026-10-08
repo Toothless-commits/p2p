@@ -6,7 +6,7 @@ from src.p2p.connections import *
 from src.p2p.protocol import *
 
 from node.state import PeerState
-from transfer.file import receive_file
+from transfer.file import *
 
 from pathlib import Path
 
@@ -93,7 +93,7 @@ def outgoing(p_id):
     print("start")
     try:
         while True:
-            choice = input("1.Get peer's list \n2.Direct Msg \n")
+            choice = input("1.Get peer's list \n2.Direct Msg \n3.File Transfer\n")
 
             if choice == "1":
                 with lock:
@@ -118,6 +118,18 @@ def outgoing(p_id):
                 conn.sendall(
                     Encoding_Message({"type": "chat", "peer_id": p_id, "text": message})
                 )
+            elif choice == "3":
+                peer_id = input("Enter the peer_id you wanna send the file\n").strip()
+
+                if peer_id == "Server" or peer_id not in peers:
+                    print("Enter Correct peer id")
+                    continue
+
+                with lock:
+                    conn = peers[peer_id]
+
+                path = input("Enter the path of the file rn")
+                file_load(path, conn)
 
     except Exception as e:
         print(f"Error : {e}")
