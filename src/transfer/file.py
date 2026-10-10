@@ -23,8 +23,8 @@ def file_send(p, conn):
 
 
 def file_load(path, conn):
-    conn.sendall(Encoding_Message({"type": "File"}))
     p = (SHARED / path).resolve()
+    conn.sendall(Encoding_Message({"type": "File", "name": p.name}))
     if not p.is_relative_to(SHARED):
         conn.sendall(DENIED)
         return False

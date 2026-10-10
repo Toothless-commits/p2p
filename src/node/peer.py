@@ -63,11 +63,11 @@ def read_messages(conn, addr, my_id):
             elif msg_type == "chat":
                 print(f"\n[{Recieved_Messages['peer_id']}] {Recieved_Messages['text']}")
             elif msg_type == "File":
-                status = receive_file(conn, Download_DIR)
-                if not status:
+                name = Path(Recieved_Messages["name"])
+                if not receive_file(conn, Download_DIR / name):
                     print("File Cannot be shared")
-            else:
-                print(Recieved_Messages)
+                else:
+                    print(Recieved_Messages)
 
     except Exception as e:
         print(f"Error : {e}")
